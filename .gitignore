@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Frontend / UI files (Ignored for Backend-only push)
+/src/app
+/src/components
+/public
+/components.json
+/postcss.config.mjs
+/tailwind.config.ts
+
+# Misc Instruction Files
+git-split-instructions.md
