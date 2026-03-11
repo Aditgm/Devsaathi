@@ -39,11 +39,10 @@ Write a 3-4 sentence roast that specifically references the data above. Be creat
                 return response.text;
             }
         } catch (error: any) {
-            console.error("Gemini GitHub Roast failed:", error.message || error);
+            console.error("Gemini Generation Error:", error.message || error);
 
             const groqKey = process.env.GROQ_API_KEY;
             if (groqKey && (error?.status === 429 || error?.status === 503 || error?.message?.includes("429") || error?.message?.includes("503"))) {
-                console.log("Switching to Groq Llama 3 Fast Fallback for GitHub Roast...");
                 try {
                     const groq = new Groq({ apiKey: groqKey });
                     const prompt = `
@@ -75,15 +74,12 @@ Write a 3-4 sentence roast that specifically references the data above. Be creat
 
                     return chatCompletion.choices[0]?.message?.content || "";
                 } catch (groqError: any) {
-                    console.error("Groq GitHub Roast Fallback ALSO failed:", groqError.message || groqError);
+                    console.error("Groq Generation Error:", groqError.message || groqError);
                 }
-            } else {
-                console.log("No valid GROQ_API_KEY found or error was not rate-limit related. Falling back to local generic roast.");
             }
         }
     }
 
-    // Fallback Mock Roasts generated locally based on score data
     const lowScore = scoreData.score < 50;
     const manyRepos = scoreData.totalRepos > 30;
     const fewCommits = scoreData.breakdown.commits < 8;
@@ -177,11 +173,10 @@ Algorithmic Core Score: ${scoreData.score}/100
 
             if (response.text) return response.text;
         } catch (error: any) {
-            console.error("Gemini CP Roast failed:", error.message || error);
+            console.error("Gemini Generation Error:", error.message || error);
 
             const groqKey = process.env.GROQ_API_KEY;
             if (groqKey && (error?.status === 429 || error?.status === 503 || error?.message?.includes("429") || error?.message?.includes("503"))) {
-                console.log("Switching to Groq Llama 3 Fast Fallback for CP Roast...");
                 try {
                     const groq = new Groq({ apiKey: groqKey });
                     const prompt = `
@@ -213,14 +208,10 @@ Algorithmic Core Score: ${scoreData.score}/100
 
                     return chatCompletion.choices[0]?.message?.content || "";
                 } catch (groqError: any) {
-                    console.error("Groq CP Roast Fallback ALSO failed:", groqError.message || groqError);
+                    console.error("Groq Generation Error:", groqError.message || groqError);
                 }
-            } else {
-                console.log("No valid GROQ_API_KEY found or error was not rate-limit related. Falling back to local CP roast.");
             }
         }
-    } else {
-        console.log("No aiKey found in environment variables.");
     }
 
     // Fallback Mock Roast
@@ -269,11 +260,10 @@ Write a 4 sentence combined roast that is EXTREMELY witty, sharp, and uses cleve
 
             if (response.text) return response.text;
         } catch (error: any) {
-            console.error("Gemini Battle Roast failed:", error.message || error);
+            console.error("Gemini Generation Error:", error.message || error);
 
             const groqKey = process.env.GROQ_API_KEY;
             if (groqKey && (error?.status === 429 || error?.status === 503 || error?.message?.includes("429") || error?.message?.includes("503"))) {
-                console.log("Switching to Groq Llama 3 Fast Fallback for Battle Roast...");
                 try {
                     const groq = new Groq({ apiKey: groqKey });
                     const scoreLabel = mode === "github" ? "FAANG Developer Score" : "Algorithmic LeetCode Score";
@@ -301,15 +291,12 @@ Write a 4 sentence combined roast that is EXTREMELY witty, sharp, and uses cleve
 
                     return chatCompletion.choices[0]?.message?.content || "";
                 } catch (groqError: any) {
-                    console.error("Groq Battle Roast Fallback ALSO failed:", groqError.message || groqError);
+                    console.error("Groq Generation Error:", groqError.message || groqError);
                 }
-            } else {
-                console.log("No valid GROQ_API_KEY found or error was not rate-limit related. Falling back to local battle roast.");
             }
         }
     }
 
-    // Fallback
     if (u1Score > u2Score) return `In a shocking display of mediocrity, ${u1Name} beat ${u2Name} ${u1Score} to ${u2Score}. Neither of you are getting into Google, but at least ${u1Name} doesn't write absolute spaghetti code.`;
     if (u2Score > u1Score) return `${u2Name} crushed ${u1Name} ${u2Score} to ${u1Score}. ${u1Name}, please delete your repository and consider a career in farming.`;
     return `A tie of ${u1Score} to ${u2Score}. You are both equally terrible.`;
