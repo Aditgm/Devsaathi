@@ -33,7 +33,7 @@ export function ContestRatingChart({ contest }: ContestRatingProps) {
     const rating = Math.round(contest.rating);
     const topPercent = contest.topPercentage.toFixed(1);
 
-    // Determine badge color based on rating tiers (approximate LC tiers)
+
     let badgeColor = "bg-zinc-500 text-zinc-100";
     let badgeBorder = "border-zinc-500/20";
     let badgeText = "Contestant";

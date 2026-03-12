@@ -1,6 +1,6 @@
 const LEETCODE_API_URL = "https://leetcode.com/graphql";
 
-// User Profile Query
+
 const USER_PROFILE_QUERY = `
   query getUserProfile($username: String!) {
     matchedUser(username: $username) {
@@ -24,7 +24,7 @@ const USER_PROFILE_QUERY = `
   }
 `;
 
-// Solved Problems Query
+
 const SUBMIT_STATS_QUERY = `
   query userProblemsSolved($username: String!) {
     allQuestionsCount {
@@ -42,7 +42,7 @@ const SUBMIT_STATS_QUERY = `
   }
 `;
 
-// Contest Ranking Query
+
 const CONTEST_RANKING_QUERY = `
   query userContestRankingInfo($username: String!) {
     userContestRanking(username: $username) {
@@ -55,7 +55,7 @@ const CONTEST_RANKING_QUERY = `
   }
 `;
 
-// Calendar / Activity Query
+
 const USER_CALENDAR_QUERY = `
   query userProfileCalendar($username: String!) {
     matchedUser(username: $username) {
@@ -69,7 +69,7 @@ const USER_CALENDAR_QUERY = `
   }
 `;
 
-// Skill/Tag Stats Query
+
 const SKILL_STATS_QUERY = `
   query skillStats($username: String!) {
     matchedUser(username: $username) {
@@ -102,7 +102,7 @@ async function fetchGraphQL(query: string, variables: any) {
         query,
         variables,
       }),
-      next: { revalidate: 3600 } // Cache API responses to avoid rate limits
+      next: { revalidate: 3600 }
     });
 
     if (!response.ok) {

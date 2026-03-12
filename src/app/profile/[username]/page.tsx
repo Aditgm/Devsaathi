@@ -26,7 +26,7 @@ export default async function ProfileDashboard({ params }: { params: { username:
     try {
         const cacheKey = `devsaathi:profile:v4:${username.toLowerCase()}`;
 
-        // Try fetching from Redis cache first to save API quota
+        // Check Redis cache first
         if (redis) {
             const cachedData = await redis.get(cacheKey);
             if (cachedData) {
@@ -39,25 +39,25 @@ export default async function ProfileDashboard({ params }: { params: { username:
             }
         }
 
-        // If no cache or cache failed, fetch live
+        // No cache hit — fetch live data
         if (!profileData) {
             profileData = await fetchGitHubProfile(username);
             reposData = await fetchGitHubRepos(username);
 
-            // Fetch heatmap contributions first so we can pass data to AI Score generator
+            // Pull contribution data for the heatmap and score calculation
             const contributions = await fetchGitHubContributions(username);
 
             if (contributions && contributions.days && contributions.days.length > 0) {
                 heatmapData = contributions;
             } else {
-                // Fallback seeded random ONLY if scraping fails
+                // Scraping failed — generate seeded fallback data
                 const seededRandom = (seed: number) => {
                     const x = Math.sin(seed) * 10000;
                     return x - Math.floor(x);
                 };
 
                 const baseSeed = username.charCodeAt(0) + profileData.public_repos;
-                // Roughly estimate consistency based on followers if scraping fails
+                // Use follower count as a rough proxy for activity level
                 const activityLevel = Math.min(1, profileData.followers / 100);
 
                 const fallbackDays = Array.from({ length: 364 }, (_, i) => {
@@ -75,16 +75,16 @@ export default async function ProfileDashboard({ params }: { params: { username:
                 });
 
                 heatmapData = {
-                    total: Math.round(activityLevel * 300), // Mock fallback total
+                    total: Math.round(activityLevel * 300),
                     days: fallbackDays
                 };
             }
 
-            // Now compute Faang Score with real valid total commits
+
             scoreData = await computeFaangScore(profileData, reposData, heatmapData.total);
             roast = await generateRoast(username, profileData, scoreData);
 
-            // Save to Redis if available, cache for 24 hours (86400s)
+            // Cache the results for 24 hours
             if (redis) {
                 await redis.setex(cacheKey, 86400, JSON.stringify({
                     profileData,
@@ -104,7 +104,7 @@ export default async function ProfileDashboard({ params }: { params: { username:
             .slice(0, 6)
             .map(([lang, count]: any) => ({
                 subject: lang,
-                A: Math.min(150, Math.round((count / totalLangs) * 200 + 50)), // Min 50 for visibility
+                A: Math.min(150, Math.round((count / totalLangs) * 200 + 50)),
                 fullMark: 150
             }));
 
@@ -113,7 +113,7 @@ export default async function ProfileDashboard({ params }: { params: { username:
         }
 
     } catch (e) {
-        // Handle error gracefully below
+
         console.error(e);
     }
 

@@ -29,20 +29,20 @@ export function TopTopicsChart({ skills }: TopTopicsChartProps) {
         );
     }
 
-    // Flatten and aggregate all tags
+
     const allTags = [
         ...(skills.advanced || []),
         ...(skills.intermediate || []),
         ...(skills.fundamental || [])
     ];
 
-    // Some tags might appear in multiple categories with separate counts, sum them up
+    // Tags can appear in multiple categories — sum them up
     const tagMap = new Map<string, number>();
     allTags.forEach(tag => {
         tagMap.set(tag.tagName, (tagMap.get(tag.tagName) || 0) + tag.problemsSolved);
     });
 
-    // Sort by most solved and take top 5
+
     const topTagsData = Array.from(tagMap.entries())
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count)

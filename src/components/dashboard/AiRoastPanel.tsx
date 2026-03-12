@@ -19,7 +19,7 @@ export function AiRoastPanel({ roastText = "Scanning your repositories... Did yo
         setIsTyping(true);
         setDisplayedText("");
 
-        // Typewriter effect
+
         const interval = setInterval(() => {
             setDisplayedText(roastText.slice(0, i));
             i++;

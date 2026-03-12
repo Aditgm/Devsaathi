@@ -13,14 +13,14 @@ import Image from "next/image";
 export default async function CPBattle({ params }: { params: { user1: string, user2: string } }) {
     const { user1, user2 } = params;
 
-    // Fetch User 1
+
     const profile1 = await fetchLeetCodeProfile(user1);
     const stats1 = profile1 ? await fetchLeetCodeStats(user1) : null;
     const contest1 = profile1 ? await fetchLeetCodeContest(user1) : null;
     const calendar1 = profile1 ? await fetchLeetCodeCalendar(user1) : null;
     const skills1 = profile1 ? await fetchLeetCodeSkills(user1) : null;
 
-    // Fetch User 2
+
     const profile2 = await fetchLeetCodeProfile(user2);
     const stats2 = profile2 ? await fetchLeetCodeStats(user2) : null;
     const contest2 = profile2 ? await fetchLeetCodeContest(user2) : null;
@@ -40,13 +40,13 @@ export default async function CPBattle({ params }: { params: { user1: string, us
         );
     }
 
-    // Compute scores
+
     const scoreData1 = await computeCPScore(profile1, stats1, contest1, calendar1);
     const scoreData2 = await computeCPScore(profile2, stats2, contest2, calendar2);
 
     const winner = scoreData1.score > scoreData2.score ? 1 : scoreData2.score > scoreData1.score ? 2 : 0;
 
-    // Generate toxic showdown roast
+
     const battleRoast = await generateBattleRoast(
         "cp",
         profile1.profile?.realName || user1, scoreData1.score,

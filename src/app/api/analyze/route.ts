@@ -17,9 +17,9 @@ export async function POST(req: Request) {
 
         const roast = await generateRoast(username, profile, scoreData);
 
-        // Map languages to radar chart data
+
         const stackData = scoreData.languages.slice(0, 6).map((lang: string) => {
-            // Give a random tech stack rating between 80-140 based roughly on language presence
+
             return {
                 subject: lang,
                 A: 80 + Math.floor(Math.random() * 60),
@@ -27,14 +27,14 @@ export async function POST(req: Request) {
             };
         });
 
-        // Ensure radar chart doesn't break if no languages found
+        // Avoid an empty chart — add a placeholder if needed
         if (stackData.length === 0) {
             stackData.push({ subject: "Markdown", A: 100, fullMark: 150 });
         }
 
-        // Mock a recent activity heatmap (1 = light green, 4 = dark green)
+
         const heatmapData = Array.from({ length: 364 }, () => {
-            // More chance of 0 to make the graph realistic
+
             const r = Math.random();
             if (r > 0.8) return 4;
             if (r > 0.6) return 3;

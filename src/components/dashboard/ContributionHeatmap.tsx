@@ -10,7 +10,7 @@ interface ContributionHeatmapProps {
 }
 
 export function ContributionHeatmap({ activityData }: ContributionHeatmapProps) {
-    // Determine color based on intensity
+
     const getColor = (level: number) => {
         switch (level) {
             case 0: return "bg-zinc-900 border-zinc-800/50";
@@ -52,8 +52,7 @@ export function ContributionHeatmap({ activityData }: ContributionHeatmapProps) 
                 {(() => {
                     const days = activityData?.days || [];
 
-                    // If less than 364 days, pad or use just the available
-                    // GitHub usually has around 371 squares (53 columns x 7 rows)
+                    // GitHub shows ~53 columns × 7 rows, pad shorter data to fill
                     const totalDays = days.length;
                     const weeksCount = Math.ceil(totalDays / 7) || 52;
 
@@ -63,7 +62,7 @@ export function ContributionHeatmap({ activityData }: ContributionHeatmapProps) 
                                 const dayOffset = (weekIndex * 7) + dayIndex;
                                 const dayData = days[dayOffset];
 
-                                // Skip rendering if we run out of days
+
                                 if (dayOffset >= totalDays && totalDays > 0) return <div key={dayIndex} className="w-3 h-3 md:w-[14px] md:h-[14px]" />;
 
                                 const level = dayData ? dayData.level : 0;
@@ -85,16 +84,7 @@ export function ContributionHeatmap({ activityData }: ContributionHeatmapProps) 
                     ));
                 })()}
             </div>
-            {/* 
-      <div className="flex justify-end gap-2 items-center text-xs text-zinc-500 mt-4">
-        <span>Less</span>
-        <div className="w-3 h-3 rounded-[2px] bg-zinc-900 border border-zinc-800/50" />
-        <div className="w-3 h-3 rounded-[2px] bg-emerald-900 border border-emerald-800" />
-        <div className="w-3 h-3 rounded-[2px] bg-emerald-600 border border-emerald-500" />
-        <div className="w-3 h-3 rounded-[2px] bg-emerald-400 border border-emerald-300" />
-        <div className="w-3 h-3 rounded-[2px] bg-emerald-300 border border-emerald-200" />
-        <span>More</span>
-      </div> */}
+
         </motion.div>
     );
 }

@@ -28,7 +28,7 @@ export default async function CPDashboard({ params }: { params: { username: stri
     try {
         const cacheKey = `devsaathi:cp:v6:${username.toLowerCase()}`;
 
-        // Try fetching from Redis cache first
+        // Check Redis cache first
         if (redis) {
             const cachedData = await redis.get(cacheKey);
             if (cachedData) {
@@ -43,7 +43,7 @@ export default async function CPDashboard({ params }: { params: { username: stri
             }
         }
 
-        // If no cache or cache failed, fetch live
+        // No cache hit — fetch live data
         if (!profileData) {
             profileData = await fetchLeetCodeProfile(username);
 
@@ -56,7 +56,7 @@ export default async function CPDashboard({ params }: { params: { username: stri
                 scoreData = await computeCPScore(profileData, statsData, contestData, calendarData);
                 roast = await generateCPRoast(username, profileData, statsData, contestData, skillsData, scoreData);
 
-                // Save to Redis if available, cache for 24 hours
+                // Cache the results for 24 hours
                 if (redis) {
                     await redis.setex(cacheKey, 86400, JSON.stringify({
                         profileData,
@@ -92,12 +92,12 @@ export default async function CPDashboard({ params }: { params: { username: stri
     const rating = contestData?.rating ? Math.round(contestData.rating) : "Unrated";
     const ranking = profileData?.profile?.ranking || "Unranked";
 
-    // Re-map score breakdown names to fit the FaangScoreCard generic UI
+    // Map CP-specific breakdown keys to the generic score card prop names
     const mappedBreakdown = scoreData ? {
-        commits: scoreData.breakdown.algos,   // Maps to Prowess
-        quality: scoreData.breakdown.mastery, // Maps to Pattern Mastery
-        diversity: scoreData.breakdown.persistence, // Maps to Grind/Consistency
-        oss: scoreData.breakdown.speed         // Maps to Speed
+        commits: scoreData.breakdown.algos,
+        quality: scoreData.breakdown.mastery,
+        diversity: scoreData.breakdown.persistence,
+        oss: scoreData.breakdown.speed
     } : undefined;
 
     return (

@@ -118,3 +118,44 @@ export async function computeCPScore(profile: any, stats: any, contest: any, cal
         }
     };
 }
+
+export function computeCFScore(profile: any, ratingHistory: any[], solvedStats: any) {
+    const currentRating = profile?.rating || 0;
+    const contestsAttended = ratingHistory?.length || 0;
+    const totalSolved = solvedStats?.totalSolved || 0;
+    const avgProblemRating = solvedStats?.avgProblemRating || 0;
+
+    let ratingScore = 0;
+    if (currentRating >= 3000) ratingScore = 40;
+    else if (currentRating >= 2400) ratingScore = Math.min(40, 30 + ((currentRating - 2400) / 600) * 10);
+    else if (currentRating >= 1900) ratingScore = Math.min(30, 20 + ((currentRating - 1900) / 500) * 10);
+    else if (currentRating >= 1600) ratingScore = Math.min(20, 13 + ((currentRating - 1600) / 300) * 7);
+    else if (currentRating >= 1200) ratingScore = Math.min(13, (currentRating / 1200) * 13);
+    else ratingScore = Math.min(8, (currentRating / 800) * 8);
+    ratingScore = Math.max(0, Math.min(40, ratingScore));
+
+    const volumeScore = Math.min(20, (totalSolved / 600) * 20);
+
+    let skillScore = 0;
+    if (avgProblemRating >= 2400) skillScore = 20;
+    else if (avgProblemRating >= 1900) skillScore = Math.min(20, 14 + ((avgProblemRating - 1900) / 500) * 6);
+    else if (avgProblemRating >= 1600) skillScore = Math.min(14, 9 + ((avgProblemRating - 1600) / 300) * 5);
+    else if (avgProblemRating >= 1200) skillScore = Math.min(9, (avgProblemRating / 1200) * 9);
+    else skillScore = Math.min(5, (avgProblemRating / 800) * 5);
+    skillScore = Math.max(0, Math.min(20, skillScore));
+
+    const contestScore = Math.min(20, (contestsAttended / 30) * 20);
+
+    const rawScore = ratingScore + volumeScore + skillScore + contestScore;
+    const calculatedScore = Math.max(10, Math.min(100, Math.round(rawScore)));
+
+    return {
+        score: calculatedScore,
+        breakdown: {
+            algos: Math.round(ratingScore),
+            mastery: Math.round(skillScore),
+            persistence: Math.round(volumeScore),
+            speed: Math.round(contestScore),
+        }
+    };
+}

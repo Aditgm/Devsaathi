@@ -45,7 +45,7 @@ export async function fetchGitHubContributions(username: string): Promise<Contri
         });
 
         if (!response.ok) {
-            return null; // Fall back to empty data if scrape fails
+            return null;
         }
 
         const html = await response.text();
@@ -53,7 +53,7 @@ export async function fetchGitHubContributions(username: string): Promise<Contri
 
         const days: DayActivity[] = [];
 
-        // Parse the table structure containing data-level attributes
+        // Scrape contribution cells from the GitHub profile page HTML
         $('td.ContributionCalendar-day').each((_, element) => {
             const levelAttr = $(element).attr('data-level');
             const dateAttr = $(element).attr('data-date');

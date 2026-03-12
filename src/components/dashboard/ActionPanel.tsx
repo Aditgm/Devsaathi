@@ -11,7 +11,7 @@ export function ActionPanel({ username }: { username: string }) {
     const handleShare = async () => {
         setIsGenerating(true);
         try {
-            // Target the entire dashboard container
+
             const element = document.getElementById("devsaathi-dashboard");
             if (!element) return;
 
@@ -22,7 +22,7 @@ export function ActionPanel({ username }: { username: string }) {
                 useCORS: true, // Allow external avatars to load
             });
 
-            // Convert to image and trigger download
+
             const image = canvas.toDataURL("image/png");
             const link = document.createElement("a");
             link.href = image;

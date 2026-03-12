@@ -13,7 +13,7 @@ import Image from "next/image";
 export default async function GitHubBattle({ params }: { params: { user1: string, user2: string } }) {
     const { user1, user2 } = params;
 
-    // Fetch both users concurrently with error handling
+
     let data1, data2;
 
     try {
@@ -31,7 +31,7 @@ export default async function GitHubBattle({ params }: { params: { user1: string
         ]);
         data2 = { profile: profile2, commits: commits2, repos: repos2 };
     } catch (error) {
-        // If any fetch fails (e.g. repo not found, profile not found), we'll fall through to the cancellation screen
+
         data1 = null;
         data2 = null;
     }
@@ -49,13 +49,13 @@ export default async function GitHubBattle({ params }: { params: { user1: string
         );
     }
 
-    // Compute scores
+
     const scoreData1 = await computeFaangScore(data1.profile, data1.repos, data1.commits?.total || 0);
     const scoreData2 = await computeFaangScore(data2.profile, data2.repos, data2.commits?.total || 0);
 
     const winner = scoreData1.score > scoreData2.score ? 1 : scoreData2.score > scoreData1.score ? 2 : 0; // 0 is tie
 
-    // Generate brutal showdown roast
+
     const battleRoast = await generateBattleRoast(
         "github",
         data1.profile.name || user1, scoreData1.score,

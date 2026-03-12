@@ -108,7 +108,7 @@ export async function generateCPRoast(username: string, profile: any, stats: any
     const mediums = stats?.solved?.find((x: any) => x.difficulty === 'Medium')?.count || 0;
     const hards = stats?.solved?.find((x: any) => x.difficulty === 'Hard')?.count || 0;
 
-    // Calculate "padding" ratio (if > 50% are easies, they are padding)
+    // If most of their solves are easy problems, they're just padding stats
     const easyRatio = totalSolved > 0 ? (easies / totalSolved) * 100 : 0;
     const isPadding = easyRatio > 50;
 
@@ -118,7 +118,7 @@ export async function generateCPRoast(username: string, profile: any, stats: any
 
     const ranking = profile?.profile?.ranking || "Unranked";
 
-    // Extract top tags to feed to the AI
+    // Grab their strongest and weakest topics for the AI prompt
     let topTagsString = "None";
     let worstTagsString = "None";
     if (skillsData) {
@@ -143,10 +143,10 @@ export async function generateCPRoast(username: string, profile: any, stats: any
         try {
             const ai = new GoogleGenAI({ apiKey: aiKey });
 
-            // Constructing a multifaceted pipeline prompt
+
             const prompt = `
 You are a highly toxic, brutally elitist Competitive Programming Grandmaster and FAANG interviewer. 
-Your job is to roast a developer's LeetCode stats. DO NOT USE EMOJIS. Make it 3-4 sentences long. Make it hurt, but make it clever and HIGHLY specific to the exact combination of their data below.
+Your job is to roast a developer's competitive programming stats. DO NOT USE EMOJIS. Make it 3-4 sentences long. Make it hurt, but make it clever and HIGHLY specific to the exact combination of their data below.
 
 === CANDIDATE DATA ===
 Name/Handle: ${profile?.profile?.realName || username}
@@ -160,9 +160,9 @@ Least Practiced Topics: ${worstTagsString}
 Algorithmic Core Score: ${scoreData.score}/100
 
 === ROAST GUIDELINES (PICK THE MOST EMBARRASSING ANGLE) ===
-1. THE PADDER: If their Easy solve ratio is high (${easyRatio.toFixed(1)}%), absolutely destroy them for padding their stats with Two Sum and Array manipulation while avoiding real algorithms.
-2. THE HARD-STUCK: If they have solved a lot of problems (>300) but their contest rating is below 1600 or unrated, mock them for grinding aimlessly without actually learning. Quote their "Mastered Topics" and ask why they can't solve a contest problem dynamically.
-3. THE SWEAT: If their contest rating is actually high (>1900) and they have many Hards solved, call them out as a basement-dwelling try-hard who can invert a binary tree in Assembly but gets a panic attack talking to a real human. Tell them AI is going to replace them anyway.
+1. THE PADDER: If their Easy solve ratio is high (${easyRatio.toFixed(1)}%), absolutely destroy them for padding their stats with trivial problems and avoiding real algorithms.
+2. THE HARD-STUCK: If they have solved a lot of problems (>300) but their contest rating is low or unrated, mock them for grinding aimlessly without actually learning. Quote their "Mastered Topics" and ask why they can't solve a contest problem dynamically.
+3. THE SWEAT: If their contest rating is high (>1900) and they have many Hards solved, call them out as a basement-dwelling try-hard who can invert a binary tree in Assembly but gets a panic attack talking to a real human. Tell them AI is going to replace them anyway.
 4. THE FAKE GENIUS: If their most solved topics are "Math" or "Brainteaser", mock them for not doing actual software engineering.
 `;
 
@@ -214,7 +214,7 @@ Algorithmic Core Score: ${scoreData.score}/100
         }
     }
 
-    // Fallback Mock Roast
+    // Fallback roast when AI is unavailable
     if (scoreData.score < 40) {
         return `I'm looking at ${username}'s LeetCode and it's mostly Easy problems. Let me guess, you memorized Two Sum and thought you were ready for Google? Your algorithmic score is a ${scoreData.score}, go learn what a Hash Map is.`;
     } else if (scoreData.score > 80) {
